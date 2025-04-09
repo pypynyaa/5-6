@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<collection>
+  <humanBeing0>
+    <id>1</id>
+    <name>4</name>
+    <creationDate>2025-04-09 12:51:55</creationDate>
+    <realHero>true</realHero>
+    <hasToothpick>true</hasToothpick>
+    <impactSpeed>3.0</impactSpeed>
+    <soundtrackName>3</soundtrackName>
+    <minutesOfWaiting>3.0</minutesOfWaiting>
+    <weaponType>PISTOL</weaponType>
+    <coordinates>
+      <x>4.0</x>
+      <y>4</y>
+    </coordinates>
+  </humanBeing0>
+  <humanBeing1>
+    <id>2</id>
+    <name>4</name>
+    <creationDate>2025-04-09 12:53:48</creationDate>
+    <realHero>true</realHero>
+    <hasToothpick>true</hasToothpick>
+    <impactSpeed>4.0</impactSpeed>
+    <soundtrackName>4</soundtrackName>
+    <minutesOfWaiting>4.0</minutesOfWaiting>
+    <weaponType>PISTOL</weaponType>
+    <coordinates>
+      <x>4.0</x>
+      <y>4</y>
+    </coordinates>
+  </humanBeing1>
+</collection>
