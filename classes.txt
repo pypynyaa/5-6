@@ -6,7 +6,7 @@ network
 network.TCPClient
 userManagers
 userManagers.UserInputScanner
-userManagers.WorkerInputHelper
+userManagers.HumanInputHelper
 ClientMain
 client/src/script1.txt
 client/src/script2.txt
@@ -20,9 +20,9 @@ interfaces
 interfaces.Validatable
 mainClasses
 mainClasses.Coordinates
-mainClasses.Person
-mainClasses.Position
-mainClasses.Worker
+mainClasses.Car
+mainClasses.WeaponType
+mainClasses.HumanBeing
 shit
 shit.Request
 shit.Response
@@ -68,4 +68,4 @@ NewTCPServer
 ServerMain
 
 log4j2.xml
-server/src/workers.xml
+server/src/humanBeings.xml

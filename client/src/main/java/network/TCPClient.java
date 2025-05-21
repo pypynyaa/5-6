@@ -6,10 +6,7 @@ import shit.Response;
 import java.io.*;
 import java.net.Socket;
 
-/**
- * Класс, реализующий TCP клиент для взаимодействия с сервером
- * Обеспечивает установку соединения, отправку запросов и получение ответов
- */
+
 public class TCPClient {
     /** Сокет для связи с сервером */
     private Socket clientSocket;

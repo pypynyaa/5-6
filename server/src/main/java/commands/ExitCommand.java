@@ -1,6 +1,7 @@
 package commands;
 
-import mainClasses.Worker;
+import mainClasses.Car;
+import mainClasses.HumanBeing;
 import managers.CollectionManager;
 
 /**
@@ -13,7 +14,7 @@ public class ExitCommand extends Command {
      * Создает команду exit
      */
     public ExitCommand() {
-        super("exit", "завершить программу", CommandType.WITHOUT_WORKER_DATA, false);
+        super("exit", "завершить программу", CommandType.WITHOUT_DATA, false);
     }
 
     /**
@@ -32,7 +33,12 @@ public class ExitCommand extends Command {
     }
 
     @Override
-    public String execute(String[] args, CollectionManager collectionManager, Worker worker) {
+    public String execute(String[] args, CollectionManager collectionManager, HumanBeing humanBeing) {
+        return "";
+    }
+
+    @Override
+    public String execute(String[] args, CollectionManager collectionManager, Car car) {
         return "";
     }
 }

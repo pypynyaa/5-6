@@ -32,14 +32,14 @@ public class ServerMain {
         commandManager.registerCommand(new RemoveByIdCommand());
         commandManager.registerCommand(new ClearCommand());
         commandManager.registerCommand(new ExecuteScriptCommand(commandManager));
-        commandManager.registerCommand(new RemoveFirstCommand());
-        commandManager.registerCommand(new AddIfMinCommand());
         commandManager.registerCommand(new RemoveLowerCommand());
-        commandManager.registerCommand(new SumOfSalaryCommand());
-        commandManager.registerCommand(new MinByCreationDateCommand());
-        commandManager.registerCommand(new PrintFieldAscendingSalaryCommand());
         commandManager.registerCommand(new ExitCommand());
         commandManager.registerCommand(new SaveCommand());
+        commandManager.registerCommand(new FilterGreaterThanCarCommand());
+        commandManager.registerCommand(new HistoryCommand(commandManager));
+        commandManager.registerCommand(new PrintDescendingCommand());
+        commandManager.registerCommand(new RemoveAllBySoundtrackNameCommand());
+        commandManager.registerCommand(new RemoveGreaterCommand());
 
         try {
             server.start(5555);

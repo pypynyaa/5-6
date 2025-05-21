@@ -1,11 +1,9 @@
 package managers;
 
-import mainClasses.Worker;
+import mainClasses.HumanBeing;
 
 import java.time.LocalDate;
-import java.util.ArrayDeque;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -13,7 +11,7 @@ import java.util.stream.Collectors;
  * Управляет коллекцией объектов Worker, обеспечивая операции добавления, удаления и модификации элементов
  */
 public class CollectionManager {
-    private ArrayDeque<Worker> workersCollection;
+    private LinkedHashSet<HumanBeing> humanCollection;
     private final LocalDate creationDate;
     private final CollectionWriter writer = new CollectionWriter();
     private final CollectionParser parser = new CollectionParser(this);
@@ -24,7 +22,7 @@ public class CollectionManager {
      * Инициализирует пустую коллекцию и устанавливает дату создания
      */
     public CollectionManager() {
-        workersCollection = new ArrayDeque<Worker>();
+        humanCollection = new LinkedHashSet<HumanBeing>();
         creationDate = LocalDate.now();
     }
 
@@ -43,10 +41,10 @@ public class CollectionManager {
      */
     public String loadCollectionFromFile(String filePath) {
         this.filePath = filePath;
-        HashMap<String, ArrayDeque<Worker>> zalupa = new HashMap<>();
+        HashMap<String, LinkedHashSet<HumanBeing>> zalupa = new HashMap<>();
         zalupa = parser.parseFromFile(filePath);
         String message = zalupa.keySet().iterator().next();
-        workersCollection = zalupa.get(message);
+        humanCollection = zalupa.get(message);
         return message;
     }
 
@@ -58,7 +56,7 @@ public class CollectionManager {
         if (filePath == null) {
             throw new IllegalStateException("Путь к файлу не установлен");
         }
-        writer.writeToFile(filePath, workersCollection);
+        writer.writeToFile(filePath, humanCollection);
     }
 
     /**
@@ -73,16 +71,16 @@ public class CollectionManager {
      * Возвращает коллекцию работников
      * @return коллекция работников
      */
-    public ArrayDeque<Worker> getWorkersCollection() {
-        return workersCollection;
+    public LinkedHashSet<HumanBeing> getHumansCollection() {
+        return humanCollection;
     }
 
     /**
      * Устанавливает новую коллекцию работников
      * @param workersCollection новая коллекция
      */
-    public void setWorkersCollection(ArrayDeque<Worker> workersCollection) {
-        this.workersCollection = workersCollection;
+    public void setWorkersCollection(LinkedHashSet<HumanBeing> workersCollection) {
+        this.humanCollection = workersCollection;
     }
 
     /**
@@ -90,9 +88,9 @@ public class CollectionManager {
      * @return строка с информацией о типе, дате создания и размере коллекции
      */
     public String getCollectionInfo() {
-        return ("Type - " + workersCollection.getClass().getName().substring(10,20) +
+        return ("Type - " + humanCollection.getClass().getName().substring(10,20) +
                 "\nCreation date - " + getCreationDate() +
-                "\nAmount of elements - " + workersCollection.size());
+                "\nAmount of elements - " + humanCollection.size());
     }
 
     /**
@@ -100,60 +98,49 @@ public class CollectionManager {
      */
     public String showCollectionElements() {
         String res;
-        if (workersCollection.isEmpty()) {
+        if (humanCollection.isEmpty()) {
             res = "Коллекция пуста";
         } else {
-            res = workersCollection.stream()
-                    .sorted(Comparator.comparing(Worker::getName))
-                    .map(Worker::toString).collect(Collectors.joining("\n"));
+            res = humanCollection.stream()
+                    .sorted(Comparator.comparing(HumanBeing::getName))
+                    .map(HumanBeing::toString).collect(Collectors.joining("\n"));
         }
         return res;
     }
 
     /**
      * Добавляет нового работника в коллекцию
-     * @param worker новый работник
+     * @param humanBeing новый работник
      */
-    public void addElement(Worker worker) {
-        if (worker == null) {
+    public void addElement(HumanBeing humanBeing) {
+        if (humanBeing == null) {
             throw new IllegalArgumentException("Работник не может быть null");
         }
-        worker.setId(generateId());
-        worker.setCreationDate(LocalDate.now());
-        if (worker.getName() == null || worker.getName().isEmpty()) {
+        humanBeing.setId(generateId());
+        humanBeing.setCreationDate(LocalDate.now());
+        if (humanBeing.getName() == null || humanBeing.getName().isEmpty()) {
             throw new IllegalArgumentException("Имя работника не может быть пустым");
         }
-        if (worker.getCoordinates() == null) {
+        if (humanBeing.getCoordinates() == null) {
             throw new IllegalArgumentException("Координаты работника не могут быть null");
         }
-        if (worker.getStartDate() == null) {
-            throw new IllegalArgumentException("Дата начала работы не может быть null");
-        }
-        if (worker.getPosition() == null) {
-            throw new IllegalArgumentException("Должность работника не может быть null");
-        }
-        if (worker.getSalary() <= 0) {
-            throw new IllegalArgumentException("Зарплата должна быть больше 0");
-        }
-        workersCollection.add(worker);
+
+        humanCollection.add(humanBeing);
     }
 
-    /**
-     * Обновляет данные работника по его id
-     * @param id идентификатор работника
-     * @param new_worker новые данные работника
-     */
-    public void updateElement(int id, Worker new_worker) {
-        workersCollection.stream().filter(worker -> worker.getId() == id).findFirst().
-                ifPresent(worker -> {
-                    worker.setId(new_worker.getId());
-                    worker.setName(new_worker.getName());
-                    worker.setCoordinates(new_worker.getCoordinates());
-                    worker.setSalary(new_worker.getSalary());
-                    worker.setStartDate(new_worker.getStartDate());
-                    worker.setEndDate(new_worker.getEndDate());
-                    worker.setPosition(new_worker.getPosition());
-                    worker.setPerson(new_worker.getPerson());
+    public void updateElement(int id, HumanBeing new_humanBeing) {
+        humanCollection.stream().filter(human -> human.getId() == id).findFirst().
+                ifPresent(human -> {
+                    human.setId(new_humanBeing.getId());
+                    human.setName(new_humanBeing.getName());
+                    human.setCoordinates(new_humanBeing.getCoordinates());
+                    human.setRealHero(new_humanBeing.getRealHero());
+                    human.setHasToothpick(new_humanBeing.getHasToothpick());
+                    human.setImpactSpeed(new_humanBeing.getImpactSpeed());
+                    human.setSoundtrackName(new_humanBeing.getSoundtrackName());
+                    human.setMinutesOfWaiting(new_humanBeing.getMinutesOfWaiting());
+                    human.setWeaponType(new_humanBeing.getWeaponType());
+                    human.setCar(new_humanBeing.getCar());
                 });
     }
 
@@ -162,95 +149,42 @@ public class CollectionManager {
      * @param id идентификатор работника
      */
     public void removeElement(int id) {
-        workersCollection.removeIf(worker -> worker.getId() == id);
+        humanCollection.removeIf(worker -> worker.getId() == id);
+    }
+
+    public void removeElementBySoundtrackName(String name) {
+        humanCollection.removeIf(worker -> worker.getSoundtrackName().equals(name));
     }
 
     /**
      * Очищает коллекцию
      */
     public void clearCollection() {
-        workersCollection.clear();
+        humanCollection.clear();
     }
 
-    /**
-     * Удаляет первый элемент коллекции
-     */
-    public void removeFirstElement() {
-        workersCollection.pollFirst();
-    }
 
-    /**
-     * Добавляет элемент, если его зарплата меньше минимальной в коллекции
-     * @param worker работник для добавления
-     * @return true если элемент был добавлен, false если нет
-     */
-    public boolean addElementIfMin(Worker worker) {
-        Worker minWorker = workersCollection.stream()
-                .min(Comparator.comparing(Worker::getSalary)).orElse(null);
-        if (minWorker == null || worker.getSalary() < minWorker.getSalary()) {
-            workersCollection.add(worker);
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     /**
      * Удаляет всех работников с зарплатой меньше заданной
-     * @param worker работник для сравнения
+     * @param humanBeing работник для сравнения
      * @return true если были удалены элементы, false если нет
      */
-    public boolean removeLowerElement(Worker worker) {
-        return workersCollection.removeIf(w -> w.getSalary() < worker.getSalary());
+    public boolean removeLowerElement(HumanBeing humanBeing) {
+        return humanCollection.removeIf(h -> h.getId() < humanBeing.getId());
     }
 
-    /**
-     * Выводит значения поля salary в порядке возрастания
-     */
-    public void printFieldAscendingSalary() {
-        if (workersCollection.isEmpty()) {
-            System.out.println("Коллекция пуста");
-            return;
-        }
-        workersCollection.stream()
-                .sorted(Comparator.comparing(Worker::getSalary))
-                .forEach(w -> System.out.println(w.getSalary()));
-    }
-
-    /**
-     * Возвращает работника с минимальной датой создания
-     * @return строковое представление работника или сообщение о пустой коллекции
-     */
-    public String minByCreationDate() {
-        if (workersCollection.isEmpty()) {
-            return "Коллекция пуста";
-        }
-        Worker minWorker = workersCollection.stream()
-                .min(Comparator.comparing(Worker::getCreationDate))
-                .orElse(null);
-        return minWorker != null ? minWorker.toString() : "Коллекция пуста";
-    }
-
-    /**
-     * Возвращает сумму зарплат всех работников
-     * @return сумма зарплат
-     */
-    public long sumOfSalary() {
-        return workersCollection.stream()
-                .mapToLong(Worker::getSalary)
-                .sum();
-    }
 
     /**
      * Генерирует уникальный идентификатор для нового работника
      * @return новый уникальный id, на единицу больше максимального в коллекции
      */
     public int generateId() {
-        if (workersCollection.isEmpty()) {
+        if (humanCollection.isEmpty()) {
             return 1;
         }
-        return workersCollection.stream()
-                .mapToInt(Worker::getId)
+        return humanCollection.stream()
+                .mapToInt(HumanBeing::getId)
                 .max()
                 .orElse(0) + 1;
     }

@@ -1,19 +1,16 @@
 package userManagers;
 
 import exceptions.ScriptRecursionException;
-import mainClasses.Worker;
+import mainClasses.Car;
+import mainClasses.HumanBeing;
 import network.TCPClient;
 import shit.Request;
 import shit.Response;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
@@ -28,7 +25,7 @@ public class UserInputScanner {
     /** Сканер для чтения пользовательского ввода */
     private final Scanner scanner;
     /** Помощник для ввода данных работника */
-    private final WorkerInputHelper helper;
+    private final HumanInputHelper helper;
     /** Форматтер для дат */
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     /** Множество выполненных скриптов для предотвращения рекурсии */
@@ -41,7 +38,7 @@ public class UserInputScanner {
     public UserInputScanner(TCPClient client) {
         this.client = client;
         this.scanner = new Scanner(System.in);
-        this.helper = new WorkerInputHelper();
+        this.helper = new HumanInputHelper();
     }
 
     /**
@@ -78,10 +75,16 @@ public class UserInputScanner {
                 // Отправляем запрос и получаем ответ
                 Response response = client.sendRequest(request);
                 executedScripts.clear();
-                if (response.getType() == Response.ResponseType.NEED_WORKER) {
-                    System.out.println("Сервер запрашивает данные работника!");
-                    Worker newWorker = helper.inputWorker();
-                    Request newRequest = new Request(newWorker);
+                if (response.getType() == Response.ResponseType.NEED_HUMAN_DATA) {
+                    System.out.println("Сервер запрашивает данные о человеке!");
+                    HumanBeing newHumanBeing = helper.inputHuman();
+                    Request newRequest = new Request(newHumanBeing);
+                    Response newResponse = client.sendRequest(newRequest);
+                    System.out.println("\n" + newResponse.getMessage());
+                } else if (response.getType() == Response.ResponseType.NEED_CAR_DATA) {
+                    System.out.println("Сервер запрашивает данные о машине!");
+                    Car car = HumanInputHelper.inputCar();
+                    Request newRequest = new Request(car);
                     Response newResponse = client.sendRequest(newRequest);
                     System.out.println("\n" + newResponse.getMessage());
                 } else if (response.getType() == Response.ResponseType.ERROR) {

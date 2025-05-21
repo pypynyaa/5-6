@@ -1,133 +1,118 @@
 package managers;
 
+import mainClasses.Car;
 import mainClasses.Coordinates;
-import mainClasses.Person;
-import mainClasses.Position;
-import mainClasses.Worker;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import mainClasses.HumanBeing;
+import mainClasses.WeaponType;
+import org.w3c.dom.*;
 import org.xml.sax.InputSource;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.*;
 
-/**
- * Класс для парсинга коллекции работников из XML файла
- * Обеспечивает чтение и преобразование XML-документа в коллекцию объектов Worker
- */
 public class CollectionParser {
     private final CollectionManager collectionManager;
 
-    /**
-     * Создает новый парсер коллекции
-     * @param collectionManager менеджер коллекции для управления данными
-     */
     public CollectionParser(CollectionManager collectionManager) {
         this.collectionManager = collectionManager;
     }
 
     /**
-     * Читает и парсит XML файл в коллекцию работников
+     * Читает и парсит XML файл в LinkedHashSet<HumanBeing>
      * @param filePath путь к XML файлу
-     * @return коллекция работников, прочитанная из файла
+     * @return LinkedHashSet<HumanBeing> или null в случае ошибки
      */
-    public HashMap<String, ArrayDeque<Worker>> parseFromFile(String filePath) {
-        ArrayDeque<Worker> workers = new ArrayDeque<>();
-        Set<Integer> idishniki = new HashSet<>();
+    public HashMap<String, LinkedHashSet<HumanBeing>> parseFromFile(String filePath) {
+        LinkedHashSet<HumanBeing> humanBeings = new LinkedHashSet<>();
+        Set<Integer> uniqueIds = new HashSet<>();
+        String errorMessage = "";
+
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); //создаем фабрику для создания парсеров
-            DocumentBuilder builder = factory.newDocumentBuilder(); // создаем парсер XML
-            
-            // Используем InputStreamReader для чтения файла
-            try (InputStreamReader reader = new InputStreamReader(new FileInputStream(filePath), StandardCharsets.UTF_8)) { //открываем XML файл для чтения и читаем в кодировке URF-8
-                InputSource inputSource = new InputSource(reader); // оборачиваем поток в формат, понятный XML-парсеру
-                Document document = builder.parse(inputSource); // разбираем XML в объект Document
-                NodeList workerNodes = document.getElementsByTagName("worker"); // получаем все элементы "worker" из XML
-                String res = "";
-                HashMap<String, ArrayDeque<Worker>> result = new HashMap<>();
-                for (int i = 0; i < workerNodes.getLength(); i++) { // проходим по каждому узлу worker
-                    Node workerNode = workerNodes.item(i);
-                    if (workerNode.getNodeType() == Node.ELEMENT_NODE) { // проверяем что это действительно элемент
-                        Element workerElement = (Element) workerNode;
-                        Worker worker = parseWorker(workerElement); // парсим Worker
-                        if (worker != null) {
-                            if (idishniki.add(worker.getId())) { // если все успешно -> добавляем в коллекцию
-                                workers.add(worker);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            try (InputStreamReader reader = new InputStreamReader(
+                    new FileInputStream(filePath), StandardCharsets.UTF_8)) {
+
+                InputSource inputSource = new InputSource(reader);
+                Document document = builder.parse(inputSource);
+                NodeList humanNodes = document.getElementsByTagName("human");
+
+                for (int i = 0; i < humanNodes.getLength(); i++) {
+                    Node humanNode = humanNodes.item(i);
+                    if (humanNode.getNodeType() == Node.ELEMENT_NODE) {
+                        Element humanElement = (Element) humanNode;
+                        HumanBeing human = parseHumanBeing(humanElement);
+
+                        if (human != null) {
+                            if (uniqueIds.add(human.getId())) {
+                                humanBeings.add(human);
                             } else {
-                                res = "Обнаружено несколько работников с одинаковым ID!" +
-                                        "\nВ коллекцию добавлен только один работник с id = " +
-                                        idishniki.stream().max(Integer::compareTo).orElse(null);
+                                errorMessage = "Обнаружены дубликаты ID! Добавлен только первый HumanBeing с id="
+                                        + human.getId();
                             }
                         }
                     }
                 }
-                result.put(res, workers);
+
+                HashMap<String, LinkedHashSet<HumanBeing>> result = new HashMap<>();
+                result.put(errorMessage, humanBeings);
                 return result;
+
             } catch (Exception e) {
-                HashMap<String, ArrayDeque<Worker>> result =  new HashMap<>();
-                result.put("Ошибка: " + e.getMessage() + " Коллекция не добавлена!", new ArrayDeque<>());
-                return result;
+                HashMap<String, LinkedHashSet<HumanBeing>> errorResult = new HashMap<>();
+                errorResult.put("Ошибка парсинга: " + e.getMessage(), new LinkedHashSet<>());
+                return errorResult;
             }
         } catch (Exception e) {
-            System.out.println("Ошибка при чтении файла: " + e.getMessage());
+            HashMap<String, LinkedHashSet<HumanBeing>> errorResult = new HashMap<>();
+            errorResult.put("Фатальная ошибка: " + e.getMessage(), new LinkedHashSet<>());
+            return errorResult;
         }
-
-        return null;
     }
 
     /**
-     * Парсит XML элемент в объект Worker
-     * @param workerElement XML элемент, содержащий данные работника
-     * @return объект Worker или null в случае ошибки парсинга
+     * Парсит элемент XML в объект HumanBeing.
      */
-    private Worker parseWorker(Element workerElement) {
+    private HumanBeing parseHumanBeing(Element humanElement) {
         try {
-            Integer id = Integer.parseInt(getElementText(workerElement, "id"));
-            String name = getElementText(workerElement, "name");
-            Coordinates coordinates = parseCoordinates(workerElement.getElementsByTagName("coordinates").item(0));
-            LocalDate creationDate = LocalDate.parse(getElementText(workerElement, "creationDate"));
-            long salary = Long.parseLong(getElementText(workerElement, "salary"));
-            LocalDateTime startDate = LocalDateTime.parse(getElementText(workerElement, "startDate"));
-            ZonedDateTime endDate = null;
-            Node endDateNode = workerElement.getElementsByTagName("endDate").item(0);
-            if (endDateNode != null) {
-                endDate = ZonedDateTime.parse(endDateNode.getTextContent());
-            }
-            Position position = Position.valueOf(getElementText(workerElement, "position"));
-            Person person = parsePerson(workerElement.getElementsByTagName("person").item(0));
+            Integer id = Integer.parseInt(getElementText(humanElement, "id"));
+            String name = getElementText(humanElement, "name");
+            Coordinates coordinates = parseCoordinates(humanElement.getElementsByTagName("coordinates").item(0));
+            LocalDate creationDate = LocalDate.parse(getElementText(humanElement, "creationDate"));
+            Boolean realHero = Boolean.parseBoolean(getElementText(humanElement, "realHero"));
+            boolean hasToothpick = Boolean.parseBoolean(getElementText(humanElement, "hasToothpick"));
+            float impactSpeed = Float.parseFloat(getElementText(humanElement, "impactSpeed"));
+            String soundtrackName = getElementText(humanElement, "soundtrackName");
+            Float minutesOfWaiting = parseNullableFloat(humanElement, "minutesOfWaiting");
+            WeaponType weaponType = parseWeaponType(humanElement);
+            Car car = parseCar(humanElement.getElementsByTagName("car").item(0));
 
-            Worker worker = new Worker(id, name, coordinates, creationDate, salary, startDate, endDate, position, person);
-            worker.validate(); // Добавляем валидацию после создания объекта
-            return worker;
-        } catch (IllegalArgumentException e) {
-            System.out.println("Работник не добавлен. Ошибка при парсинге работника: " + e.getMessage());
-            return null;
+            HumanBeing human = new HumanBeing(
+                    id, name, coordinates, creationDate, realHero, hasToothpick,
+                    impactSpeed, soundtrackName, minutesOfWaiting, weaponType, car
+            );
+            human.validate(); // Валидация полей
+            return human;
+
         } catch (Exception e) {
-            System.out.println("Работник не добавлен. Непредвиденная ошибка при парсинге работника: " + e.getMessage());
+            System.err.println("Ошибка парсинга HumanBeing1: " + e.getMessage());
             return null;
         }
     }
 
     /**
-     * Парсит XML элемент в объект Coordinates
-     * @param coordinatesNode XML узел с координатами
-     * @return объект Coordinates или null в случае ошибки
+     * Парсит Coordinates из XML узла
      */
     private Coordinates parseCoordinates(Node coordinatesNode) {
-        if (coordinatesNode.getNodeType() == Node.ELEMENT_NODE) { // проверяем, что узел coordinates существует
+        if (coordinatesNode.getNodeType() == Node.ELEMENT_NODE) {
             Element coordinatesElement = (Element) coordinatesNode;
-            Double x = Double.parseDouble(getElementText(coordinatesElement, "x")); // просто парсим данные
+            Float x = Float.parseFloat(getElementText(coordinatesElement, "x"));
             long y = Long.parseLong(getElementText(coordinatesElement, "y"));
-            Coordinates coordinates = new Coordinates(x, y); // возвращаем экземпляр класса Coordinates
+            Coordinates coordinates = new Coordinates(x, y);
             coordinates.validate();
             return coordinates;
         }
@@ -135,56 +120,40 @@ public class CollectionParser {
     }
 
     /**
-     * Парсит XML элемент в объект Person
-     * @param personNode XML узел с данными о человеке
-     * @return объект Person или null в случае ошибки или отсутствия данных
+     * Парсит Car из XML узла
      */
-    private Person parsePerson(Node personNode) {
-        if (personNode == null || personNode.getNodeType() != Node.ELEMENT_NODE) { // проверяем, что узел person существует
-            return null;
-        }
-
-        Element personElement = (Element) personNode;
-        try {
-            Date birthday = null;
-            Node birthdayNode = personElement.getElementsByTagName("birthday").item(0);
-            if (birthdayNode != null) { // если birthday есть, преобразуем в Date.
-                long timestamp = Long.parseLong(birthdayNode.getTextContent());
-                birthday = new Date(timestamp);
-            }
-
-            Float height = null;
-            Node heightNode = personElement.getElementsByTagName("height").item(0); // просто парсим данные
-            if (heightNode != null) {
-                height = Float.parseFloat(heightNode.getTextContent());
-            }
-
-            Float weight = null;
-            Node weightNode = personElement.getElementsByTagName("weight").item(0);
-            if (weightNode != null) {
-                weight = Float.parseFloat(weightNode.getTextContent());
-            }
-
-            Person person = new Person(birthday, height, weight); // возвращаем экземпляр класса Person после проверки
-            person.validate();
-            return person;
-        } catch (Exception e) {
-            System.out.println("Работник не добавлен. Ошибка при парсинге данных о человеке: " + e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Получает текстовое содержимое элемента по имени тега
-     * @param parent родительский XML элемент
-     * @param tagName имя искомого тега
-     * @return текстовое содержимое элемента или null, если элемент не найден
-     */
-    private String getElementText(Element parent, String tagName) {
-        NodeList nodeList = parent.getElementsByTagName(tagName); // Получаем список узлов с тегом tagName внутри элемента parent
-        if (nodeList.getLength() > 0) { // проверяем есть ли хотя бы 1 элемент с таким тегом
-            return nodeList.item(0).getTextContent(); // берем первый элемент и возвращаем его текст
+    private Car parseCar(Node carNode) {
+        if (carNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element carElement = (Element) carNode;
+            String name = getElementText(carElement, "name");
+            Car car = new Car(name);
+            car.validate();
+            return car;
         }
         return null;
     }
-} 
+
+    /**
+     * Парсит WeaponType (может быть null)
+     */
+    private WeaponType parseWeaponType(Element humanElement) {
+        String weaponTypeStr = getElementText(humanElement, "weaponType");
+        return weaponTypeStr != null ? WeaponType.valueOf(weaponTypeStr) : null;
+    }
+
+    /**
+     * Парсит Float (может быть null)
+     */
+    private Float parseNullableFloat(Element element, String tagName) {
+        String text = getElementText(element, tagName);
+        return text != null ? Float.parseFloat(text) : null;
+    }
+
+    /**
+     * Получает текст элемента по тегу
+     */
+    private String getElementText(Element parent, String tagName) {
+        NodeList nodeList = parent.getElementsByTagName(tagName);
+        return nodeList.getLength() > 0 ? nodeList.item(0).getTextContent() : null;
+    }
+}

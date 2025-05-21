@@ -1,6 +1,7 @@
 package commands;
 
-import mainClasses.Worker;
+import mainClasses.Car;
+import mainClasses.HumanBeing;
 import managers.CollectionManager;
 
 /**
@@ -14,7 +15,7 @@ public class AddCommand extends Command {
      */
     public AddCommand() {
         super("add", "добавить новый элемент в коллекцию",
-                CommandType.WITH_WORKER_DATA, false);
+                CommandType.WITH_HUMAN_DATA, false);
     }
 
     /**
@@ -28,9 +29,14 @@ public class AddCommand extends Command {
     }
 
     @Override
-    public String execute(String[] args, CollectionManager collectionManager, Worker worker) {
-        collectionManager.addElement(worker);
+    public String execute(String[] args, CollectionManager collectionManager, HumanBeing humanBeing) {
+        collectionManager.addElement(humanBeing);
         return "Работник добавлен в коллекцию";
+    }
+
+    @Override
+    public String execute(String[] args, CollectionManager collectionManager, Car car) {
+        return "";
     }
 
 

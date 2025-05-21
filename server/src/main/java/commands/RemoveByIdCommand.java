@@ -1,6 +1,7 @@
 package commands;
 
-import mainClasses.Worker;
+import mainClasses.Car;
+import mainClasses.HumanBeing;
 import managers.CollectionManager;
 
 /**
@@ -14,7 +15,7 @@ public class RemoveByIdCommand extends Command {
      */
     public RemoveByIdCommand() {
         super("remove_by_id", "удалить элемент из коллекции по его id",
-                CommandType.WITHOUT_WORKER_DATA, true);
+                CommandType.WITHOUT_DATA, true);
     }
 
     /**
@@ -35,7 +36,12 @@ public class RemoveByIdCommand extends Command {
     }
 
     @Override
-    public String execute(String[] args, CollectionManager collectionManager, Worker worker) {
+    public String execute(String[] args, CollectionManager collectionManager, HumanBeing humanBeing) {
+        return "";
+    }
+
+    @Override
+    public String execute(String[] args, CollectionManager collectionManager, Car car) {
         return "";
     }
 }

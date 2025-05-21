@@ -2,7 +2,8 @@ package network;
 
 import commands.Command;
 import exceptions.ScriptRecursionException;
-import mainClasses.Worker;
+import mainClasses.Car;
+import mainClasses.HumanBeing;
 import managers.CollectionManager;
 import managers.CommandManager;
 import shit.Request;
@@ -45,6 +46,7 @@ public class TCPServer {
     public int clientCount = 0;
     /** Множество активных скриптов для предотвращения рекурсии */
     private final Set<String> activeScripts = new HashSet<>();
+
 
     /**
      * Конструктор сервера
@@ -107,18 +109,27 @@ public class TCPServer {
                             logger.warn("Команда была введена некорректно!");
                         } else {
                             logger.info("Запрос на выполнение команды: {}", command.toString());
-                            if (command.getCommandType() == Command.CommandType.WITHOUT_WORKER_DATA) {
+                            if (command.getCommandType() == Command.CommandType.WITHOUT_DATA) {
                                 Response response = commandManager.executeCommand(request.getCommandName(), request.getArgs(), collectionManager);
                                 logger.info("Сформирован ответ клиенту: {}", response.toString());
                                 sendResponse(response, out);
-                            } else {
-                                Response response = new Response(Response.ResponseType.NEED_WORKER, "Требуется ввести данные о работнике");
+                            } else if (command.getCommandType() == Command.CommandType.WITH_HUMAN_DATA) {
+                                Response response = new Response(Response.ResponseType.NEED_HUMAN_DATA, "Требуется ввести данные о человеке!");
                                 logger.info("Сформирован ответ клиенту: {}", response.toString());
-                                out.writeObject(response);
+                                sendResponse(response, out);
                                 Request newRequest = (Request) in.readObject();
-                                Worker worker = newRequest.getWorker();
-                                logger.info("Получены данные о работнике: {}", newRequest.getWorker().toString());
-                                Response newResponse = commandManager.executeCommand(request.getCommandName(), request.getArgs(), collectionManager, worker);
+                                HumanBeing humanBeing = newRequest.getHuman();
+                                logger.info("Получены данные о человеке: {}", newRequest.getHuman().toString());
+                                Response newResponse = commandManager.executeCommand(request.getCommandName(), request.getArgs(), collectionManager, humanBeing);
+                                logger.info("Сформирован ответ клиенту: {}", newResponse.toString());
+                                sendResponse(newResponse, out);
+                            } else if (command.getCommandType() == Command.CommandType.WITH_CAR_DATA) {
+                                Response response = new Response(Response.ResponseType.NEED_CAR_DATA, "Требуется ввести данные о машине.");
+                                sendResponse(response, out);
+                                Request newRequest = (Request) in.readObject();
+                                Car newCar = newRequest.getCar();
+                                logger.info("Получены данные о машине: {}", newRequest.getCar().toString());
+                                Response newResponse = commandManager.executeCommand(request.getCommandName(), request.getArgs(), collectionManager, newCar);
                                 logger.info("Сформирован ответ клиенту: {}", newResponse.toString());
                                 sendResponse(newResponse, out);
                             }
@@ -308,46 +319,4 @@ public class TCPServer {
             logger.error("Ошибка закрытия сокета: {}", e.getMessage());
         }
     }
-
-//    /**
-//     * Обрабатывает начальную команду от клиента
-//     * @param request запрос клиента
-//     * @param out поток для отправки ответа
-//     * @param in поток для чтения данных
-//     * @throws IOException если возникла ошибка при обмене данными
-//     * @throws ClassNotFoundException если возникла ошибка при десериализации
-//     */
-//    private void handleInitialCommand(Request request, ObjectOutputStream out, ObjectInputStream in) throws IOException, ClassNotFoundException {
-//        Command command = commandManager.getCommands().get(request.getCommandName());
-//        if (command != null) {
-//            if (command.needArgs && request.getArgs().length == 0) {
-//                Response response = new Response(Response.ResponseType.ERROR, false,
-//                        "У данной команды обязательно должен быть указан ее аргумент.");
-//                logger.info("Сформирован ответ клиенту: {}", response.toString());
-//                sendResponse(response, out);
-//                logger.warn("Команда была введена некорректно!");
-//            } else {
-//                logger.info("Запрос на выполнение команды: {}", command.toString());
-//                if (command.getCommandType() == Command.CommandType.WITHOUT_WORKER_DATA) {
-//                    Response response = commandManager.executeCommand(request.getCommandName(), request.getArgs(), collectionManager);
-//                    logger.info("Сформирован ответ клиенту: {}", response.toString());
-//                    sendResponse(response, out);
-//                } else {
-//                    Response response = new Response(Response.ResponseType.NEED_WORKER, "Требуется ввести данные о работнике");
-//                    logger.info("Сформирован ответ клиенту: {}", response.toString());
-//                    out.writeObject(response);
-//                    Request newRequest = (Request) in.readObject();
-//                    Worker worker = newRequest.getWorker();
-//                    logger.info("Получены данные о работнике: {}", newRequest.getWorker().toString());
-//                    Response newResponse = commandManager.executeCommand(request.getCommandName(), request.getArgs(), collectionManager, worker);
-//                    logger.info("Сформирован ответ клиенту: {}", newResponse.toString());
-//                    sendResponse(newResponse, out);
-//                }
-//            }
-//        } else {
-//            Response response = new Response(Response.ResponseType.ERROR, "Введена некорректная команда!");
-//            logger.warn("Сформирован ответ клиенту: {}", response.toString());
-//            sendResponse(response, out);
-//        }
-//    }
 }

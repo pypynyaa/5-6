@@ -1,6 +1,7 @@
 package commands;
 
-import mainClasses.Worker;
+import mainClasses.Car;
+import mainClasses.HumanBeing;
 import managers.CollectionManager;
 
 /**
@@ -14,7 +15,7 @@ public class UpdateCommand extends Command {
      */
     public UpdateCommand() {
         super("update", "обновить значение элемента коллекции, id которого равен заданному",
-                CommandType.WITH_WORKER_DATA, true);
+                CommandType.WITH_HUMAN_DATA, true);
     }
 
     /**
@@ -28,15 +29,20 @@ public class UpdateCommand extends Command {
     }
 
     @Override
-    public String execute(String[] args, CollectionManager collectionManager, Worker worker) {
+    public String execute(String[] args, CollectionManager collectionManager, HumanBeing humanBeing) {
         try {
             if (args.length < 1) throw new IllegalArgumentException();
             int id = Integer.parseInt(args[0]);
-            worker.setId(id);
-            collectionManager.updateElement(id, worker);
+            humanBeing.setId(id);
+            collectionManager.updateElement(id, humanBeing);
             return "Значение элемента обновлено";
         } catch (IllegalArgumentException e) {
             return "Использование: update [id]";
         }
+    }
+
+    @Override
+    public String execute(String[] args, CollectionManager collectionManager, Car car) {
+        return "";
     }
 }

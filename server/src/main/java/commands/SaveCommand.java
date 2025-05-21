@@ -1,6 +1,7 @@
 package commands;
 
-import mainClasses.Worker;
+import mainClasses.Car;
+import mainClasses.HumanBeing;
 import managers.CollectionManager;
 
 /**
@@ -13,7 +14,7 @@ public class SaveCommand extends Command {
      * Создает команду save
      */
     public SaveCommand() {
-        super("save", "сохранить коллекцию в файл", CommandType.WITHOUT_WORKER_DATA, false);
+        super("save", "сохранить коллекцию в файл", CommandType.WITHOUT_DATA, false);
     }
 
     /**
@@ -37,7 +38,12 @@ public class SaveCommand extends Command {
     }
 
     @Override
-    public String execute(String[] args, CollectionManager collectionManager, Worker worker) {
+    public String execute(String[] args, CollectionManager collectionManager, HumanBeing humanBeing) {
+        return "";
+    }
+
+    @Override
+    public String execute(String[] args, CollectionManager collectionManager, Car car) {
         return "";
     }
 }

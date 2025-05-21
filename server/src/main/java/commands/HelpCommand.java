@@ -1,6 +1,7 @@
 package commands;
 
-import mainClasses.Worker;
+import mainClasses.Car;
+import mainClasses.HumanBeing;
 import managers.CollectionManager;
 import managers.CommandManager;
 
@@ -19,7 +20,7 @@ public class HelpCommand extends Command{
      */
     public HelpCommand(CommandManager commandManager) {
         super("help", "вывести справку по доступным командам",
-                CommandType.WITHOUT_WORKER_DATA, false);
+                CommandType.WITHOUT_DATA, false);
         this.commandManager = commandManager;
     }
 
@@ -45,7 +46,12 @@ public class HelpCommand extends Command{
     }
 
     @Override
-    public String execute(String[] args, CollectionManager collectionManager, Worker worker) {
+    public String execute(String[] args, CollectionManager collectionManager, HumanBeing humanBeing) {
+        return "";
+    }
+
+    @Override
+    public String execute(String[] args, CollectionManager collectionManager, Car car) {
         return "";
     }
 }

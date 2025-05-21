@@ -1,6 +1,7 @@
 package commands;
 
-import mainClasses.Worker;
+import mainClasses.Car;
+import mainClasses.HumanBeing;
 import managers.CollectionManager;
 import managers.CommandManager;
 
@@ -32,12 +33,16 @@ public class ExecuteScriptCommand extends Command {
      */
     @Override
     public String execute(String[] args, CollectionManager collectionManager) {
-        // Логика перенесена в TCPServer.processScriptRequest
         return "Скрипт обработан";
     }
 
     @Override
-    public String execute(String[] args, CollectionManager collectionManager, Worker worker) {
+    public String execute(String[] args, CollectionManager collectionManager, HumanBeing humanBeing) {
+        return "";
+    }
+
+    @Override
+    public String execute(String[] args, CollectionManager collectionManager, Car car) {
         return "";
     }
 }

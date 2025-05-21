@@ -9,7 +9,7 @@ import java.io.Serializable;
  * Содержит координаты x и y
  */
 public class Coordinates implements Validatable, Serializable {
-    private Double x; //Максимальное значение поля: 100
+    private Float x; //Максимальное значение поля: 100
     private long y; //Поле не может быть null, Значение поля должно быть больше -415
 
     /**
@@ -22,7 +22,7 @@ public class Coordinates implements Validatable, Serializable {
      * @param x координата x (максимальное значение: 100)
      * @param y координата y (должна быть больше -415)
      */
-    public Coordinates(Double x, long y) {
+    public Coordinates(Float x, long y) {
         this.x = x;
         this.y = y;
     }
@@ -31,7 +31,7 @@ public class Coordinates implements Validatable, Serializable {
      * Получает координату x
      * @return координата x
      */
-    public Double getX() {
+    public double getX() {
         return x;
     }
 
@@ -47,7 +47,7 @@ public class Coordinates implements Validatable, Serializable {
      * Устанавливает координату x
      * @param x координата x (максимальное значение: 100)
      */
-    public void setX(Double x) {
+    public void setX(Float x) {
         this.x = x;
     }
 
@@ -87,7 +87,7 @@ public class Coordinates implements Validatable, Serializable {
      */
     @Override
     public int hashCode() {
-        return x.hashCode() + Long.hashCode(y);
+        return Float.hashCode(x) + Double.hashCode(y);
     }
 
     @Override
@@ -95,8 +95,8 @@ public class Coordinates implements Validatable, Serializable {
         if (x == null) {
             throw new IllegalArgumentException("Координата X не может быть null");
         }
-        if (y <= -415) {
-            throw new IllegalArgumentException("Координата Y должна быть больше -415");
+        if (x <= -99) {
+            throw new IllegalArgumentException("Координата X должна быть больше -99");
         }
     }
 }

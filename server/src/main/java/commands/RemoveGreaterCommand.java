@@ -4,24 +4,18 @@ import mainClasses.Car;
 import mainClasses.HumanBeing;
 import managers.CollectionManager;
 
-/**
- * Команда 'remove_lower'
- * Удаляет из коллекции все элементы, меньшие, чем заданный
- */
-public class RemoveLowerCommand extends Command {
+public class RemoveGreaterCommand extends Command {
 
-    /**
-     * Создает команду remove_lower
-     */
-    public RemoveLowerCommand() {
-        super("remove_lower", "удалить из коллекции все элементы, меньшие, чем заданный",
+    public RemoveGreaterCommand() {
+        super("remove_greater", "удалить из коллекции все элементы, превышающие заданный",
                 CommandType.WITH_HUMAN_DATA, false);
     }
 
     /**
-     * Исполняет команду
-     * @param args аргументы команды (не используются)
-     * @param collectionManager менеджер коллекции
+     * Выполняет команду с заданными аргументами
+     *
+     * @param args              аргументы команды
+     * @param collectionManager менеджер коллекции, над которой выполняется команда
      */
     @Override
     public String execute(String[] args, CollectionManager collectionManager) {
@@ -33,7 +27,7 @@ public class RemoveLowerCommand extends Command {
         if (args.length > 0) {
             return "Данная команда не принимает аргументы!";
         } else {
-            collectionManager.getHumansCollection().removeIf(h -> h.getId() < humanBeing.getId());
+            collectionManager.getHumansCollection().removeIf(h -> h.getId() > humanBeing.getId());
             return "Элементы удалены";
         }
     }

@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class Response implements Serializable {
 
     public enum ResponseType{
-        INFO, NEED_WORKER, ERROR, ONE_MORE_SCRIPT;
+        INFO, NEED_HUMAN_DATA, NEED_CAR_DATA, ERROR, ONE_MORE_SCRIPT;
     }
 
     /** Тип ответа */

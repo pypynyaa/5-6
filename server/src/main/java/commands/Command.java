@@ -1,7 +1,8 @@
 package commands;
 
 import interfaces.Executable;
-import mainClasses.Worker;
+import mainClasses.Car;
+import mainClasses.HumanBeing;
 import managers.CollectionManager;
 
 import java.io.Serializable;
@@ -14,7 +15,7 @@ import java.util.Objects;
 public abstract class Command implements Executable, Serializable {
 
     public enum CommandType{
-        WITH_WORKER_DATA, WITHOUT_WORKER_DATA, WITH_SCRIPT_FILE;
+        WITH_HUMAN_DATA, WITH_CAR_DATA, WITHOUT_DATA,  WITH_SCRIPT_FILE;
     }
 
     private final String name;
@@ -89,6 +90,7 @@ public abstract class Command implements Executable, Serializable {
      * @param collectionManager менеджер коллекции, над которой выполняется команда
      */
     public abstract String execute(String[] args, CollectionManager collectionManager);
-    public abstract String execute(String[] args, CollectionManager collectionManager, Worker worker);
+    public abstract String execute(String[] args, CollectionManager collectionManager, HumanBeing humanBeing);
+    public abstract String execute(String[] args, CollectionManager collectionManager, Car car);
 }
 

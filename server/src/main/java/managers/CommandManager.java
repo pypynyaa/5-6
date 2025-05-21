@@ -1,10 +1,12 @@
 package managers;
 
 import commands.Command;
-import mainClasses.Worker;
+import mainClasses.Car;
+import mainClasses.HumanBeing;
 import shit.Response;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -13,6 +15,8 @@ import java.util.Map;
  */
 public class CommandManager {
     private final Map<String, Command> commands = new HashMap<>();
+    private final LinkedList<String> commandHistory = new LinkedList<>();
+    private static final int HISTORY_SIZE = 5;
 
     /**
      * Регистрирует новую команду
@@ -32,20 +36,44 @@ public class CommandManager {
         Command command = commands.get(commandName);
         if (command != null) {
             String message = command.execute(args, collectionManager);
+            addToHistory(commandName);
             return new Response(Response.ResponseType.INFO, true, message);
         } else {
             return new Response(Response.ResponseType.INFO, false, "Неизвестная команда");
         }
     }
 
-    public Response executeCommand(String commandName, String[] args, CollectionManager collectionManager, Worker worker) {
+    public Response executeCommand(String commandName, String[] args, CollectionManager collectionManager, HumanBeing humanBeing) {
         Command command = commands.get(commandName);
         if (command != null) {
-            String message = command.execute(args, collectionManager, worker);
+            String message = command.execute(args, collectionManager, humanBeing);
+            addToHistory(commandName);
             return new Response(true, message);
         } else {
             return new Response(false, "Неизвестная команда");
         }
+    }
+
+    public Response executeCommand(String commandName, String[] args, CollectionManager collectionManager, Car car) {
+        Command command = commands.get(commandName);
+        if (command != null) {
+            String message = command.execute(args, collectionManager, car);
+            addToHistory(commandName);
+            return new Response(true, message);
+        } else {
+            return new Response(false, "Неизвестная команда");
+        }
+    }
+
+    private void addToHistory(String command) {
+        commandHistory.addFirst(command);
+        if (commandHistory.size() > HISTORY_SIZE) {
+            commandHistory.removeLast();
+        }
+    }
+
+    public LinkedList<String> getCommandHistory() {
+        return commandHistory;
     }
 
     /**

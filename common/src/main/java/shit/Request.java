@@ -1,6 +1,7 @@
 package shit;
 
-import mainClasses.Worker;
+import mainClasses.Car;
+import mainClasses.HumanBeing;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -15,14 +16,15 @@ public class Request implements Serializable {
      * Перечисление типов запросов
      */
     public enum RequestType {
-        SCRIPT_TRANSFER, INITIAL_COMMAND, WORKER_DATA;
+        SCRIPT_TRANSFER, INITIAL_COMMAND, HUMAN_DATA, CAR_DATA;
     }
 
     private RequestType type; // Тип запроса
     private String commandName; // Имя команды
     private String[] args; // Аргументы команды
     private String scriptContent; // Содержимое скрипта
-    private Worker worker; // Данные работника
+    private HumanBeing humanBeing; // Данные работника
+    private Car car;
 
     /**
      * Конструктор для создания запроса с начальной командой
@@ -37,11 +39,16 @@ public class Request implements Serializable {
 
     /**
      * Конструктор для создания запроса с данными работника
-     * @param worker объект работника
+     * @param humanBeing объект работника
      */
-    public Request(Worker worker) {
-        this.type = RequestType.WORKER_DATA;
-        this.worker = worker;
+    public Request(HumanBeing humanBeing) {
+        this.type = RequestType.HUMAN_DATA;
+        this.humanBeing = humanBeing;
+    }
+
+    public Request(Car car) {
+        this.type = RequestType.CAR_DATA;
+        this.car = car;
     }
 
     /**
@@ -65,7 +72,7 @@ public class Request implements Serializable {
     @Override
     public String toString() {
         return "(type = " + type + ", commandName = " + commandName
-                + ", arguments = " + Arrays.toString(args) + ", worker = " + worker + ")";
+                + ", arguments = " + Arrays.toString(args) + ", worker = " + humanBeing + ")";
     }
 
     /**
@@ -96,5 +103,7 @@ public class Request implements Serializable {
      * Получает данные работника
      * @return объект работника
      */
-    public Worker getWorker() { return worker; }
+    public HumanBeing getHuman() { return humanBeing; }
+
+    public Car getCar() { return car; }
 }
