@@ -1,0 +1,6 @@
+2025-06-13 19:35:32.691 [SSH-Tunnel-Thread] INFO  network.SSHConnection - SSH-туннель создан: localhost:8888 -> pg:5432 через se.ifmo.ru
+2025-06-13 19:35:34.394 [main] INFO  managers.DatabaseManager - Успешное подключение к БД через SSH-туннель
+2025-06-13 19:35:34.483 [main] INFO  managers.DatabaseManager - Загружено 0 HumanBeing'ов из БД.
+2025-06-13 19:35:34.493 [main] INFO  network.TCPServer - Сервер запущен на порту 5556
+2025-06-13 19:35:34.494 [AdminInputThread] INFO  network.TCPServer - Доступен интерактивный режим админа
+2025-06-13 19:35:40.704 [main] INFO  network.TCPServer - Подключение от клиента: 127.0.0.1 (текущее количество клиентов: 1)

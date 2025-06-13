@@ -1,0 +1,11 @@
+shit/User.class
+shit/Response$ResponseType.class
+shit/Request$RequestType.class
+mainClasses/WeaponType.class
+interfaces/Validatable.class
+shit/Response.class
+shit/Request.class
+mainClasses/HumanBeing.class
+exceptions/ScriptRecursionException.class
+mainClasses/Car.class
+mainClasses/Coordinates.class
